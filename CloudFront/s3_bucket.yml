@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Distribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Origins:
+          - 
+            # Use the DeployBucket as the CDN origin
+            DomainName: !GetAtt <your-deployment-s3-bucket>.DomainName ### change - here ###
+            Id: !Ref <your-deployment-s3-bucket> ### change - here ###
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultRootObject: index.html
+        Enabled: true
+        # Configure the caching behavior for our CDN
+        DefaultCacheBehavior: 
+          MinTTL: 86400  # 1 day
+          MaxTTL: 31536000  # 1 year
+          ForwardedValues: 
+            QueryString: true
+          TargetOriginId: !Ref <your-deployment-s3-bucket> ### change - here ###
+          ViewerProtocolPolicy: "redirect-to-https"   # we want to force HTTPS
